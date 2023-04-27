@@ -1,0 +1,88 @@
+using System;
+using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+
+public class KnapsackBlindSearch
+{
+    public static int Solve(int[] values, int[] weights, int capacity)
+    {
+        int numItems = values.Length;
+
+        // Define a function to generate all possible combinations of 0's and 1's
+        List<List<int>> GenerateCombinations(int length)
+        {
+            if (length == 0)
+            {
+                return new List<List<int>> { new List<int>() };
+            }
+            else
+            {
+                List<List<int>> subcombs = GenerateCombinations(length - 1);
+                List<List<int>> combs = new List<List<int>>();
+                foreach (List<int> subcomb in subcombs)
+                {
+                    combs.Add(new List<int>(subcomb) { 0 });
+                    combs.Add(new List<int>(subcomb) { 1 });
+                }
+                return combs;
+            }
+        }
+
+        // Generate all possible combinations of 0's and 1's to represent the items in the knapsack
+        List<List<int>> combinations = GenerateCombinations(numItems);
+
+        int maxValue = 0;
+        // Iterate over each combination
+        foreach (List<int> combination in combinations)
+        {
+            int currentWeight = 0;
+            int currentValue = 0;
+            // Calculate the total weight and value of the current combination
+            for (int i = 0; i < numItems; i++)
+            {
+                if (combination[i] == 1)
+                {
+                    currentWeight += weights[i];
+                    currentValue += values[i];
+                }
+            }
+            // If the current combination fits within the capacity and has a higher value than the previous maximum, update the maximum
+            if (currentWeight <= capacity && currentValue > maxValue)
+            {
+                maxValue = currentValue;
+            }
+        }
+
+        return maxValue;
+    }
+
+    public static void Main()
+    {
+        // int[] values = { 60, 100, 120 };
+        Console.Write("Enter the number of values: ");
+        int n = int.Parse(Console.ReadLine());
+
+        int[] values = new int[n];
+        for (int i = 0; i < n; i++)
+        {
+            Console.Write("Enter value " + (i + 1) + ": ");
+            values[i] = int.Parse(Console.ReadLine());
+        }
+
+
+        //int[] weights = { 10, 20, 30 };
+        Console.WriteLine("enter the weights");
+        int[] weights = new int[n];
+
+        for (int i = 0; i < n; i++)
+        {
+            Console.Write("Enter value " + (i + 1) + ": ");
+            weights[i] = Convert.ToInt32(Console.ReadLine());
+        }
+        Console.WriteLine("enter the capacity");
+        int capacity = Convert.ToInt32(Console.ReadLine());
+        int maxValue = Solve(values, weights, capacity);
+        Console.WriteLine("Maximum value that can be obtained = " + maxValue);
+
+    }
+}
